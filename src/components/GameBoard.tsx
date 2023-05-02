@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 
-const GameBoard: React.FC<{ size: number; snake: any; food: any }> = ({
-  size,
-  snake,
-  food,
-}) => {
-  const [game, setGame] = useState(Array(size).fill(Array(size).fill(0)));
-
+const GameBoard: React.FC<{
+  size: number;
+  snake: { x: number; y: number }[];
+  food: { x: number; y: number };
+  direction: string;
+}> = ({ size, snake, food, direction }) => {
+  const game = [...Array(size)].map((_) => Array(size).fill(0));
 
   return (
-    <div className="game flex flex-col gap-0.5">
+    <div className="game flex flex-col bg-gray-500">
       {game.map((row, i) => (
-        <div className="row flex gap-0.5" key={i}>
+        <div className="row flex " key={i}>
           {row.map((cell, j) => (
             <div
               className={`w-5 h-5 ${
@@ -20,8 +20,7 @@ const GameBoard: React.FC<{ size: number; snake: any; food: any }> = ({
                 })
                   ? 'bg-green-500'
                   : 'bg-gray-500'
-              }
-            
+              } 
             })}`}
               key={j}
             >
