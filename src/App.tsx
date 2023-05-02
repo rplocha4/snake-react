@@ -1,20 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useEffectEvent } from 'react';
+
 import './App.css';
 import GameBoard from './components/GameBoard';
 
 const gameSize = 25;
 
 function App() {
-  const [snake, setSnake] = useState([
-    { x: 0, y: 0 },
-    { x: 1, y: 0 },
-    { x: 2, y: 0 },
-    { x: 3, y: 0 },
-    { x: 4, y: 0 },
-    { x: 5, y: 0 },
-    { x: 6, y: 0 },
-  ]);
+  const [snake, setSnake] = useState([{ x: 0, y: 0 }]);
   const [direction, setDirection] = useState('right');
+  const [food, setFood] = useState({ x: 10, y: 10 });
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -66,20 +60,26 @@ function App() {
         switch (direction) {
           case 'right':
             newHead = { x: head.x + 1, y: head.y };
-            // newSnake.push({ x: head.x + 1, y: head.y });
             break;
           case 'left':
             newHead = { x: head.x - 1, y: head.y };
-            // newSnake.push({ x: head.x - 1, y: head.y });
             break;
           case 'up':
             newHead = { x: head.x, y: head.y - 1 };
-            // newSnake.push({ x: head.x, y: head.y - 1 });
             break;
           case 'down':
             newHead = { x: head.x, y: head.y + 1 };
-            // newSnake.push({ x: head.x, y: head.y + 1 });
             break;
+        }
+        if (newHead.x === food.x && newHead.y === food.y) {
+          setFood({
+            x: Math.floor(Math.random() * gameSize),
+            y: Math.floor(Math.random() * gameSize),
+          });
+          newSnake.push(newHead);
+
+          return newSnake;
+          // newSnake.unshift({ x: head.x, y: head.y });
         }
         if (newHead.x < 0) {
           newHead.x = gameSize - 1;
@@ -93,6 +93,7 @@ function App() {
         if (newHead.y > gameSize - 1) {
           newHead.y = 0;
         }
+
         if (newSnake.some((s) => s.x === newHead.x && s.y === newHead.y)) {
           console.log('game over');
         }
@@ -105,14 +106,14 @@ function App() {
     moveSnake();
     const interval = setInterval(() => {
       moveSnake();
-    }, 600);
+    }, 100);
     return () => clearInterval(interval);
   }, [direction]);
 
   return (
     <>
       <div className="bg-black h-screen w-full flex justify-center items-center">
-        <GameBoard size={gameSize} snake={snake} />
+        <GameBoard size={gameSize} snake={snake} food={food} />
       </div>
     </>
   );

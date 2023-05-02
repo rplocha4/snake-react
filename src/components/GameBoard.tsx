@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 
-const GameBoard: React.FC<{ size: number; snake: any }> = ({ size, snake }) => {
+const GameBoard: React.FC<{ size: number; snake: any; food: any }> = ({
+  size,
+  snake,
+  food,
+}) => {
   const [game, setGame] = useState(Array(size).fill(Array(size).fill(0)));
+
 
   return (
     <div className="game flex flex-col gap-0.5">
@@ -19,7 +24,11 @@ const GameBoard: React.FC<{ size: number; snake: any }> = ({ size, snake }) => {
             
             })}`}
               key={j}
-            ></div>
+            >
+              {food.x === j && food.y === i && (
+                <div className="w-full h-full bg-red-500"></div>
+              )}
+            </div>
           ))}
         </div>
       ))}
