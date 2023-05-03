@@ -19,20 +19,27 @@ function App() {
     localStorage.getItem('maxScore') || 0
   );
 
-  const handleFoodCollision = () => {
+  const handleFoodCollision = useCallback(() => {
     setScore((prevScore) => prevScore + 1);
-    setFood({
+    const newFood = {
       x: Math.floor(Math.random() * (gameSize - 1)),
       y: Math.floor(Math.random() * (gameSize - 1)),
-    });
+    };
+    // while (snake.some((s) => s.x === newFood.x && s.y === newFood.y)) {
+    //   newFood = {
+    //     x: Math.floor(Math.random() * (gameSize - 1)),
+    //     y: Math.floor(Math.random() * (gameSize - 1)),
+    //   };
+    // }
+    setFood(newFood);
     setSnake((s) => {
       const newSnake = [...s];
       const tail = newSnake[0];
       newSnake.unshift(tail);
       return newSnake;
     });
-  };
-  const resetHandler = () => {
+  }, []);
+  const resetHandler = useCallback(() => {
     setGameOver(false);
     setSnake([{ x: 0, y: 0 }]);
     setDirection('right');
@@ -41,7 +48,7 @@ function App() {
       y: Math.floor(Math.random() * (gameSize - 1)),
     });
     setScore(0);
-  };
+  }, []);
   const gameOverHandler = useCallback(() => {
     setGameOver(true);
     const maxScore = localStorage.getItem('maxScore') || 0;
@@ -52,13 +59,18 @@ function App() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === ' ') {
-        setPaused((prevPaused) => !prevPaused);
+        if (gameOver) {
+          resetHandler();
+        } else setPaused((prevPaused) => !prevPaused);
         return;
-      } else if (e.key === 'R' || e.key === 'r') {
+      }
+      if (paused || gameOver) {
+        return;
+      }
+      if (e.key === 'R' || e.key === 'r') {
         resetHandler();
         return;
       }
-
       setDirection((prevDirection) => {
         switch (e.key) {
           case 'ArrowUp':
@@ -88,7 +100,7 @@ function App() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [paused, gameOver, resetHandler]);
   const handleDirection = useCallback(
     (head: { x: number; y: number }) => {
       switch (direction) {
@@ -146,7 +158,14 @@ function App() {
       !gameOver && !paused && moveSnake();
     }, 50);
     return () => clearInterval(interval);
-  }, [handleDirection, gameOverHandler, food, gameOver, paused]);
+  }, [
+    handleDirection,
+    gameOverHandler,
+    food,
+    gameOver,
+    paused,
+    handleFoodCollision,
+  ]);
 
   return (
     <div className="bg-black h-screen w-full flex gap-2 justify-center items-center  text-white">
@@ -175,10 +194,10 @@ function App() {
             </button>
           </div>
         )}
-      </div>
-      <div className="">
-        <p>Space - pause/unpause</p>
-        <p>R - reset</p>
+        <div className="text-2xl">
+          <p>Space - pause/unpause</p>
+          <p>R - reset</p>
+        </div>
       </div>
     </div>
   );

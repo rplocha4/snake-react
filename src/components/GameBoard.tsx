@@ -9,7 +9,10 @@ const GameBoard: React.FC<{
   const head = snake[snake.length - 1];
 
   return (
-    <div className="game flex flex-col bg-gray-500">
+    <div
+      className="flex flex-col bg-opacity-50 bg-green-800"
+
+    >
       {game.map((row, i) => (
         <div className="row flex " key={i}>
           {row.map((cell, j) => (
@@ -18,8 +21,8 @@ const GameBoard: React.FC<{
                 snake.some((s) => {
                   return s.x === j && s.y === i;
                 })
-                  ? 'bg-green-500'
-                  : 'bg-gray-500'
+                  ? 'bg-yellow-600'
+                  : ''
               } 
             })}`}
               key={j}
